@@ -31,51 +31,41 @@ export const useBoardStore = defineStore('board', () => {
         'pawn'                      // x8
     ]
 
+    function _isEven(a){
+        return a % 2 == 0
+    }
+    // TODO: Rename params to more readable
+    function getColorEvaluation(id, tile){
+        // if id is even the evaluation needs to be even
+        if(_isEven(id)) {
+            return _isEven(tile)
+        }
+        return !_isEven(tile)
+    }
+
     class boardSquare {
-        constructor(col, id) {
-            console.log(id)
-            this.color = id % 2 == 0 ? 'white' : 'black';
+        constructor(col, id, tile) {
+            console.log('id for evaluation', id)
+            this.color = getColorEvaluation(id, tile) ? 'black' : 'white';
             this.piece = null;
             this.id = col+id;
         }
     }
 
     const boardState = reactive(getFreshBoard())
-    //use v-for keys to locate items in each array
-
-
-    // TODO: Do I create an id property? e.g. {id: 'E7'}
-    // Knight to E7
-    // Row 1 - 8 Tiles 
-    // Row 2 - 8 Tiles
-    // Board Contructors
-
-    const rowColorController = true
-
-    const myTest = (param) => {
-        return param % 2 == 0 ? 'even' : 'odd'
-    }
-
 
     function getFreshBoard() {
         // This Returns an Array of Arrays - bottom level has objects
-        return boardCols.map((number, index) => {
-            return boardCols.map((col) => {
-                return new boardSquare(col, index + 1)
+        return boardCols.map((columnLetter, colIndex) => {
+            console.log('columnLetter', columnLetter)
+            return boardCols.map((col, tileIndex) => {
+                // colIndex for determining evaluation type, tileIndex for color selection
+                return new boardSquare(col, colIndex + 1, tileIndex + 1)
             })
         }).reverse()
-        // boardLoading.value = false
     }
 
-    // function getFreshBoard() {
-    //     // This Returns an Array of Arrays - bottom level has objects
-    //     return boardCols.map(col => {
-    //         return boardCols.map((nested, index) => {
-    //             return new boardSquare(true, col+(index + 1))
-    //         })
-    //     }).reverse()
-    //     // boardLoading.value = false
-    // }
+
 
 
     return { boardLoading, getFreshBoard, boardState }
