@@ -3,7 +3,7 @@ import { reactive, ref } from 'vue'
 
 export const useBoardStore = defineStore('board', () => {
 
-    const boardLoading=ref(true)
+    const boardLoading=ref(false)
     const boardCols = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
     const boardRows = 8
 
@@ -49,6 +49,56 @@ export const useBoardStore = defineStore('board', () => {
             this.color = getColorEvaluation(id, tile) ? 'black' : 'white';
             this.piece = null;
             this.id = col+id;
+        }
+
+        // Temporary functions to test styling until pieces are implemented
+        isPiece() {
+            return this.getPieceType() != "";
+        }
+        getPieceIcon() {
+            return 'fa-chess-' + this.getPieceType();
+        }
+        getPieceType() {
+            var res = "";
+            if (this.id.indexOf("2") > -1 || this.id.indexOf("7") > -1) {
+                res = "pawn";
+            }
+            switch (this.id) {
+                case 'e8':
+                case 'e1':
+                    res = 'king';
+                    break;
+                case 'd8':
+                case 'd1':
+                    res = 'queen';
+                    break;
+                case 'c8':
+                case 'f8':
+                case 'c1':
+                case 'f1':
+                    res = 'bishop';
+                    break;
+                case 'b8':
+                case 'g8':
+                case 'b1':
+                case 'g1':
+                    res = 'knight';
+                    break;
+                case 'a8':
+                case 'h8':
+                case 'a1':
+                case 'h1':
+                    res = 'rook';
+                    break;
+            }
+            return res;
+        }
+        getPieceColorClass() {
+            var res = 'color-dark';
+            if (this.id.indexOf('1') > -1 || this.id.indexOf('2') > -1) {
+                res = 'color-light';
+            }
+            return res;
         }
     }
 

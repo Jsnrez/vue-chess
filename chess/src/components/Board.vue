@@ -10,13 +10,21 @@
         </v-row>
         <!-- Master Row -->
         <v-row v-if="!board.boardLoading">
-            <v-col cols="8" offset="3">
-                <v-row no-gutters v-for="row in board.boardState">
-                    <!-- <v-col cols="12">This is a Row</v-col> -->
-                    <v-col v-for="cell in row" :key="cell.id">
-                        <h1>{{ cell.id }}</h1>
+            <v-col>
+                <!-- placeholder for player 1's captured pieces -->
+            </v-col>
+            <v-col class="board" cols="8">
+                <v-row class="board-row" no-gutters v-for="row in board.boardState">
+                    <v-col class="board-square" v-for="cell in row" :key="cell.id" :class="{ 'draggable-dropzone--occupied': cell.isPiece() }">
+                        <span class="board-piece" v-show="cell.isPiece()" :class="cell.getPieceColorClass()">
+                            <i class="fa-solid" :class="cell.getPieceIcon()"></i>
+                        </span>
+                        <h3 class="board-notation">{{ cell.id }}</h3>
                     </v-col>
                 </v-row>
+            </v-col>
+            <v-col>
+                <!-- placeholder for player 2's captured pieces -->
             </v-col>
         </v-row>
         <v-row v-else>
@@ -24,8 +32,6 @@
                 <v-progress-circular :size="50" color="amber" indeterminate></v-progress-circular>
             </v-col>
         </v-row>
-
-
     </v-container>
 </template>
 

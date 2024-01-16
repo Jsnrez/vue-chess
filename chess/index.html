@@ -5,9 +5,18 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + Vue</title>
+    <script src="https://kit.fontawesome.com/aa6edf3e3c.js" crossorigin="anonymous"></script>
   </head>
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
   </body>
+  <script type="module">
+    import Droppable from 'https://cdn.jsdelivr.net/npm/@shopify/draggable/build/esm/Droppable/Droppable.mjs';
+  
+    const droppable = new Droppable(document.querySelectorAll('.board'), {
+      draggable: '.board-piece',
+      dropzone: '.board-square',
+    });
+  </script>
 </html>

@@ -1,0 +1,87 @@
+/* variables */
+:root {
+    --piece-dark-color: #111;
+    --piece-light-color: #eee;
+
+    --board-dark-color: #5C4033;
+    --board-light-color: #C19A6B;
+
+    --board-border-color: #7B3F00;
+    --board-border-width: 10px;
+
+    --board-square-length: min(12.5vmin, 100px);
+}
+
+/* utility */
+.color-dark {
+    color: var(--piece-dark-color);
+    -webkit-text-stroke: .5px var(--piece-light-color);
+}
+.color-light {
+    color: var(--piece-light-color);
+    -webkit-text-stroke: 1.5px var(--piece-dark-color);
+}
+
+/* board styling */
+.board {
+    padding: 0 !important;
+    border: var(--board-border-width) solid var(--board-border-color);
+    min-width: calc(var(--board-square-length) * 8);
+}
+
+.board-row:nth-child(even) .board-square:nth-child(odd),
+.board-row:nth-child(odd) .board-square:nth-child(even) {
+    background: var(--board-dark-color);
+    color: var(--board-light-color);
+}
+.board-row:nth-child(even) .board-square:nth-child(even),
+.board-row:nth-child(odd) .board-square:nth-child(odd) {
+    background: var(--board-light-color);
+    color: var(--board-dark-color);
+}
+
+.board-square {
+    text-align: center;
+    font-family: monospace;
+    text-transform: uppercase;
+    width: var(--board-square-length);
+    height: var(--board-square-length);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: visible;
+}
+
+.board-notation {
+    user-select: none;
+    position: absolute;
+    bottom: 0;
+    left: calc(var(--board-square-length) / 12);
+    font-size: calc(var(--board-square-length) / 6);
+}
+
+.board-piece {
+    cursor: pointer;
+    font-size: calc(var(--board-square-length) / 2);
+    width: calc(var(--board-square-length) / 2);
+}
+
+/* draggable styles */
+.draggable-dropzone--active.draggable-dropzone--occupied {
+    --draggable-border-width: 3px;
+
+    box-sizing: content-box;
+    border: var(--draggable-border-width) dashed var(--piece-light-color);
+    margin: calc(var(--draggable-border-width) * -1);
+    padding: var(--draggable-border-width) 0 calc(var(--draggable-border-width) * 2) 0;
+    z-index: 10;
+}
+
+.draggable-mirror {
+    z-index: 1000;
+}
+
+.draggable-source--is-dragging {
+    opacity: .5;
+}
