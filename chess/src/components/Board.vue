@@ -14,8 +14,8 @@
                 <!-- placeholder for player 1's captured pieces -->
             </v-col>
             <v-col class="board" cols="8">
-                <v-row class="board-row" no-gutters v-for="row in board.boardState">
-                    <v-col class="board-square" v-for="cell in row" :key="cell.id" :class="{ 'draggable-dropzone--occupied': cell.isPiece() }">
+                <v-row class="board-row" no-gutters v-for="(row, index_x) in board.boardState" :key="index_x">
+                    <v-col class="board-square" v-for="(cell, index_y) in row" :key="index_y"  @click="console.log(index_x, index_y)">
                         <span class="board-piece" v-show="cell.isPiece()" :class="cell.getPieceColorClass()">
                             <i class="fa-solid" :class="cell.getPieceIcon()"></i>
                         </span>
@@ -36,8 +36,28 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { useBoardStore } from '../stores/board.js'
 
 const board = useBoardStore()
+
+function activatePiece(cell='fail', e) {
+    // activate piece, assign property to class
+    // if piece from event is already the active one then unassign
+    //
+    console.log('cell', cell)
+    console.log(cell?.target)
+    console.log(cell?.value)
+    console.log('Event', e)
+    if(!cell.piece) {
+        console.log('hit exit Clause')
+        return
+    }
+
+}
+
+const highlightedSquares = computed(() => {
+
+})
 
 </script>
