@@ -9,6 +9,9 @@
     --board-border-color: #7B3F00;
     --board-border-width: 10px;
 
+    --board-selected-piece-color: blue;
+    --board-prospective-move-color: purple;
+
     --board-square-length: min(12.5vmin, 100px);
 }
 
@@ -51,6 +54,14 @@
     justify-content: center;
     position: relative;
     overflow: visible;
+}
+
+.board-square.selected {
+    background: var(--board-selected-piece-color) !important;
+}
+
+.board-square.highlight-move {
+    background: var(--board-prospective-move-color) !important;
 }
 
 .board-notation {

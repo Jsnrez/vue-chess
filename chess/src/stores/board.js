@@ -28,49 +28,13 @@ export const useBoardStore = defineStore('board', () => {
             this.classes = null;
             this.piece = getPieceType(col+id);
             this.id = col+id;
+            this.selected = false
+            this.prospectiveMove = false
         }
 
         // Temporary functions to test styling until pieces are implemented
-        isPiece() {
-            return this.getPieceType() != "";
-        }
         getPieceIcon() {
-            return 'fa-chess-' + this.getPieceType();
-        }
-        getPieceType() {
-            var res = "";
-            if (this.id.indexOf("2") > -1 || this.id.indexOf("7") > -1) {
-                res = "pawn";
-            }
-            switch (this.id) {
-                case 'e8':
-                case 'e1':
-                    res = 'king';
-                    break;
-                case 'd8':
-                case 'd1':
-                    res = 'queen';
-                    break;
-                case 'c8':
-                case 'f8':
-                case 'c1':
-                case 'f1':
-                    res = 'bishop';
-                    break;
-                case 'b8':
-                case 'g8':
-                case 'b1':
-                case 'g1':
-                    res = 'knight';
-                    break;
-                case 'a8':
-                case 'h8':
-                case 'a1':
-                case 'h1':
-                    res = 'rook';
-                    break;
-            }
-            return res;
+            return 'fa-chess-' + this.piece;
         }
         getPieceColorClass() {
             var res = 'color-dark';
@@ -81,7 +45,9 @@ export const useBoardStore = defineStore('board', () => {
         }
     }
 
-    const boardState = reactive(getFreshBoard())
+    const boardState = reactive({
+        value: getFreshBoard()
+    })
 
     // [y-axis][x-axis]
     function getFreshBoard() {

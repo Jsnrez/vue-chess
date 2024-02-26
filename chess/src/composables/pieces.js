@@ -1,7 +1,10 @@
-import {ref} from 'vue'
+// import {ref} from 'vue'
+/**
+ * Returns the starting positions for a board arrangement.
+ * @returns String
+ */
 
 export function usePieces() {
-    const pieces = 'pieces'
 
     function getPieceType(id) {
         var res = "";
@@ -39,6 +42,16 @@ export function usePieces() {
         return res;
     }
 
+    const rookMovement = (x, y) => {
+        // we know both arrays have a length of 8
+        // use a for-loop twice, one where x is unchanged, and another where y is unchanged
+        const spacesToHighlight = []
+        
 
-    return { pieces, getPieceType }
+        return ['values']
+    }
+
+    //distance to end
+
+    return { getPieceType }
 }
