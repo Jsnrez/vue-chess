@@ -42,16 +42,5 @@ export function usePieces() {
         return res;
     }
 
-    const rookMovement = (x, y) => {
-        // we know both arrays have a length of 8
-        // use a for-loop twice, one where x is unchanged, and another where y is unchanged
-        const spacesToHighlight = []
-        
-
-        return ['values']
-    }
-
-    //distance to end
-
     return { getPieceType }
 }
