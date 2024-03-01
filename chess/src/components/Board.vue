@@ -38,27 +38,12 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue';
+import { reactive, ref } from 'vue';
 import { useBoardStore } from '../stores/board.js'
 
 const board = useBoardStore()
-const test = ref(0)
 const possibleMoves = reactive([])
 const pieceSelected = ref(false)
-
-function deepCopyArray(arr) {
-    return arr.map(element => Array.isArray(element) ? deepCopyArray(element) : deepCopyObject(element));
-}
-
-function deepCopyObject(obj) {
-    const newObj = {};
-    for (const key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) {
-            newObj[key] = (typeof obj[key] === 'object' && obj[key] !== null) ? deepCopyObject(obj[key]) : obj[key];
-        }
-    }
-    return newObj;
-}
 
 // invokes a function on tile click depending on board state
 function handleClick(row, col, sqRef) {
@@ -68,18 +53,13 @@ function handleClick(row, col, sqRef) {
         activatePiece(sqRef)
 
         // Get list of possible moves
-        possibleMoves.push(...board.rookMovement(row, col))
-
-        console.log('possibleMoves', possibleMoves)
-
+        possibleMoves.push(...board.pieceMovementSet[sqRef.piece](row, col))
         // Highlight Possible moves
         board.stylePossibleMoves(possibleMoves)
 
         return
     }
-    console.log('PASSED FIRST IF STATEMENT')
     // A piece is selected
-    console.log(pieceSelected.value)
     if (pieceSelected.value.id == sqRef.id) {
         // Create an array of valid move id's, check if array.find(board.boardState[row][col].id)
         console.log('hit deselect if')
@@ -100,7 +80,6 @@ function activatePiece(sqRef) {
     }
     // higher order function to determine checkmate
     // create working copy of board, use for patch later
-    // const boardCopy = deepCopyArray(board.boardState)
     // reference to selected Cell
     pieceSelected.value = sqRef
 

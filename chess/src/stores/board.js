@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
 import { usePieces } from '../composables/pieces';
 
 export const useBoardStore = defineStore('board', () => {
@@ -46,7 +46,30 @@ export const useBoardStore = defineStore('board', () => {
 
   const boardState = ref(getFreshBoard());
 
-  // [y-axis][x-axis]
+  const pieceMovementSet = reactive({
+    bishop: (x) => {
+      console.log('bishop movement');
+      return []
+    },
+    king: (x) => {
+      console.log('king movement');
+      return []
+    },
+    knight: (x) => {
+      console.log('knight movement');
+      return []
+    },
+    pawn: (x) => {
+      console.log('pawn movement');
+      return []
+    },
+    queen: (x) => {
+      console.log('queen movement');
+      return []
+    },
+    rook: rookMovement,
+  });
+
   function getFreshBoard() {
     // This Returns an Array of Arrays - bottom level has objects
     return boardCols.map((columnLetter, colIndex) => {
@@ -58,19 +81,13 @@ export const useBoardStore = defineStore('board', () => {
     });
   }
 
-  // Keep the state in 2 parts - one for display and one for game management
-
   function rookMovement(x, y) {
-    // we know both arrays have a length of 8
-    // use a for-loop twice, one where x is unchanged, and another where y is unchanged
     const allPossibleMoves = [];
-
     const movementPatterns = {};
 
     movementPatterns.getXAxisPositiveMovement = boardState.value[y].slice(
       x + 1
     );
-    // movementPatterns.getXAxisNegativeMovement = x ? testArrCopy[y].slice(-x) : []
     movementPatterns.getXAxisNegativeMovement = x
       ? boardState.value
           .map((row) => row.map((sq) => sq).reverse())
@@ -93,54 +110,26 @@ export const useBoardStore = defineStore('board', () => {
           index = movementPatterns[move_dir].length;
           continue;
         }
-        // element.selected = true;
-        allPossibleMoves.push(element)
       }
     });
 
     return allPossibleMoves;
   }
 
+  //TODO: Break out logic from rookMovement into new function called sequentialMovement. Use for cardinal directions (Up, Down, Left, Right)
 
   function stylePossibleMoves(movementPatterns) {
-    console.log(movementPatterns)
-    // Object.keys(movementPatterns).forEach((move_dir) => {
-    //     for (let index = 0; index < movementPatterns[move_dir].length; index++) {
-    //       const element = movementPatterns[move_dir][index];
-    //       if (element.piece) {
-    //         index = movementPatterns[move_dir].length;
-    //         continue;
-    //       }
-    //       element.selected = !element.selected;
-    //     }
-    //   });
-
-      movementPatterns.forEach(element => {
-        element.selected = !element.selected;
-      });
-
+    movementPatterns.forEach((element) => {
+      element.prospectiveMove = !element.prospectiveMove;
+    });
   }
 
-  // returns a list of id's of all legal spaces to the end of an array
-  // function sequentialMove(index, array) {
-  //     return ''
-  // }
-  // function __inlineMovement(origin, axis) {
-  //     for (let i = origin + 1; i < 8; i++) {
-  //         console.log('Loop started at index of -- ', i)
-  //         boardState.value[i]
-  //     }
-  // }
-
-  const getSquareId = (x, y) => {
-    return boardState.value[x][y]['id'];
+  return {
+    boardLoading,
+    getFreshBoard,
+    boardState,
+    pieceMovementSet,
+    rookMovement,
+    stylePossibleMoves,
   };
-
-  // higher order function idea - continue checking
-  // function checks for prescence of piece on board square, returns id
-  //      -- call multiple times to populate an array of legal moves
-
-  //distance to end
-
-  return { boardLoading, getFreshBoard, boardState, rookMovement, stylePossibleMoves };
 });
