@@ -67,20 +67,20 @@ export const useBoardStore = defineStore('board', () => {
 
     const movementPatterns = {};
 
-    movementPatterns.getXAxisPositiveMovement = board.boardState[y].slice(
+    movementPatterns.getXAxisPositiveMovement = boardState.value[y].slice(
       x + 1
     );
     // movementPatterns.getXAxisNegativeMovement = x ? testArrCopy[y].slice(-x) : []
     movementPatterns.getXAxisNegativeMovement = x
-      ? board.boardState
+      ? boardState.value
           .map((row) => row.map((sq) => sq).reverse())
           [y].slice(-x)
       : [];
-    movementPatterns.getYAxisPositiveMovement = board.boardState
+    movementPatterns.getYAxisPositiveMovement = boardState.value
       .map((row) => row[x])
       .slice(y + 1);
     movementPatterns.getYAxisNegativeMovement = y
-      ? board.boardState
+      ? boardState.value
           .map((row) => row[x])
           .reverse()
           .slice(-y)
@@ -93,11 +93,32 @@ export const useBoardStore = defineStore('board', () => {
           index = movementPatterns[move_dir].length;
           continue;
         }
-        element.selected = true;
+        // element.selected = true;
+        allPossibleMoves.push(element)
       }
     });
 
     return allPossibleMoves;
+  }
+
+
+  function stylePossibleMoves(movementPatterns) {
+    console.log(movementPatterns)
+    // Object.keys(movementPatterns).forEach((move_dir) => {
+    //     for (let index = 0; index < movementPatterns[move_dir].length; index++) {
+    //       const element = movementPatterns[move_dir][index];
+    //       if (element.piece) {
+    //         index = movementPatterns[move_dir].length;
+    //         continue;
+    //       }
+    //       element.selected = !element.selected;
+    //     }
+    //   });
+
+      movementPatterns.forEach(element => {
+        element.selected = !element.selected;
+      });
+
   }
 
   // returns a list of id's of all legal spaces to the end of an array
@@ -107,12 +128,12 @@ export const useBoardStore = defineStore('board', () => {
   // function __inlineMovement(origin, axis) {
   //     for (let i = origin + 1; i < 8; i++) {
   //         console.log('Loop started at index of -- ', i)
-  //         boardState[i]
+  //         boardState.value[i]
   //     }
   // }
 
   const getSquareId = (x, y) => {
-    return boardState[x][y]['id'];
+    return boardState.value[x][y]['id'];
   };
 
   // higher order function idea - continue checking
@@ -121,5 +142,5 @@ export const useBoardStore = defineStore('board', () => {
 
   //distance to end
 
-  return { boardLoading, getFreshBoard, boardState, rookMovement };
+  return { boardLoading, getFreshBoard, boardState, rookMovement, stylePossibleMoves };
 });
