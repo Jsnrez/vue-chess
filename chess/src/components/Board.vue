@@ -13,10 +13,11 @@
             <v-col>
                 <!-- placeholder for player 1's captured pieces -->
             </v-col>
-            <v-col class="board" cols="8">
-                <v-row class="board-row" no-gutters v-for="(row, index_x) in board.boardState" :key="index_x">
+            <!-- Add logic to control flex-column-reverse depending on player color -->
+            <v-col class="board d-flex flex-column-reverse" cols="8">
+                <v-row class="board-row" no-gutters v-for="(row, index_y) in board.boardState" :key="index_y">
                     <v-col class="board-square" :class="{ selected: cell.selected, 'highlight-move': cell.prospectiveMove }"
-                        v-for="(cell, index_y) in row" :key="index_y" @click="testMovement(index_x, index_y)">
+                        v-for="(cell, index_x) in row" :key="index_x" @click="testMovement(index_x, index_y)">
                         <span class="board-piece" v-show="cell.piece" :class="cell.getPieceColorClass()">
                             <i class="fa-solid" :class="cell.getPieceIcon()"></i>
                         </span>
@@ -37,7 +38,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { useBoardStore } from '../stores/board.js'
 
 const board = useBoardStore()
@@ -46,6 +47,10 @@ console.log(test)
 console.log(test.value)
 
 const pieceSelected = ref(false)
+
+onMounted(() => {
+    board.boardState[3][3].piece = 'rook'
+})
 
 function deepCopyArray(arr) {
     return arr.map(element => Array.isArray(element) ? deepCopyArray(element) : deepCopyObject(element));
@@ -79,17 +84,38 @@ function handleClick(colLetter, rowNum) {
 }
 
 function testMovement(x, y) {
-    console.log(x)
-    let testVal = board.rookMovement(x,y)
 
-    console.log(testVal)
+    const movementPatterns = {}
+
+    movementPatterns.getXAxisPositiveMovement = board.boardState[y].slice(x + 1)
+    // movementPatterns.getXAxisNegativeMovement = x ? testArrCopy[y].slice(-x) : []
+    movementPatterns.getXAxisNegativeMovement = x ? board.boardState.map(row => row.map(sq => sq).reverse())[y].slice(-x) : []
+    movementPatterns.getYAxisPositiveMovement = board.boardState.map(row => row[x]).slice(y + 1)
+    movementPatterns.getYAxisNegativeMovement = y ? board.boardState.map(row => row[x]).reverse().slice(-y) : []
+
+    Object.keys(movementPatterns).forEach(move_dir => {
+        for (let index = 0; index < movementPatterns[move_dir].length; index++) {
+            const element = movementPatterns[move_dir][index];
+            if (element.piece) {
+                index = movementPatterns[move_dir].length
+                continue
+            }
+            element.selected = true
+        }
+    })
 }
 
-function activatePiece(colLetter, rowNum) {
+const controlObject = {
+    forward: (x) => { return x },
+    backward: (x) => { return -x },
+
+}
+
+function activatePiece(row, col) {
     // activate piece, assign property to class
     // if piece from event is already the active one then unassign
 
-    if (!board.boardState[colLetter][rowNum].piece) {
+    if (!board.boardState[row][col].piece) {
         console.log('hit exit Clause')
         return
     }
@@ -97,8 +123,8 @@ function activatePiece(colLetter, rowNum) {
     // create working copy of board, use for patch later
     // const boardCopy = deepCopyArray(board.boardState)
     // reference to selected Cell
-    pieceSelected.value = board.boardState[colLetter][rowNum]
-    
+    pieceSelected.value = board.boardState[row][col]
+
     pieceSelected.value.selected = true
 
 
