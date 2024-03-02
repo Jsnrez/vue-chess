@@ -59,14 +59,36 @@ function handleClick(row, col, sqRef) {
 
         return
     }
+
+    
+
+    if(possibleMoves.find((el) => el.id == sqRef.id)){
+        // assign properties to new tile
+        sqRef.piece = pieceSelected.value.piece
+        sqRef.color = pieceSelected.value.color
+
+        // remove piece from previous tile
+        pieceSelected.value.piece = false
+        pieceSelected.value.color = false
+        pieceSelected.value.selected = false
+        pieceSelected.value = false
+        // reset board styles
+        board.stylePossibleMoves(possibleMoves)
+        possibleMoves.length = 0
+        // handover turn
+        return
+    }
+
     // A piece is selected
-    if (pieceSelected.value.id == sqRef.id) {
+    // if (pieceSelected.value.id == sqRef.id) {
+       if(!possibleMoves.find((el) => el.id == sqRef.id) || pieceSelected.value.id == sqRef.id) {
         // Create an array of valid move id's, check if array.find(board.boardState[row][col].id)
         console.log('hit deselect if')
         pieceSelected.value.selected = false
         pieceSelected.value = false
         board.stylePossibleMoves(possibleMoves)
         possibleMoves.length = 0
+        return
     }
 }
 
