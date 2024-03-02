@@ -110,6 +110,7 @@ export const useBoardStore = defineStore('board', () => {
           index = movementPatterns[move_dir].length;
           continue;
         }
+        allPossibleMoves.push(element)
       }
     });
 

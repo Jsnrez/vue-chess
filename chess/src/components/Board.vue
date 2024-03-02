@@ -16,7 +16,7 @@
             <!-- Add logic to control flex-column-reverse depending on player color -->
             <v-col class="board d-flex flex-column-reverse" cols="8">
                 <v-row class="board-row" no-gutters v-for="(row, index_y) in board.boardState" :key="index_y">
-                    <v-col class="board-square" :class="{ selected: cell.selected, 'highlight-move': cell.prospectiveMove }"
+                    <v-col class="board-square" :class="{ 'selected': cell.selected, 'highlight-move': cell.prospectiveMove }"
                         v-for="(cell, index_x) in row" :key="index_x" @click="handleClick(index_x, index_y, cell)">
                         <span class="board-piece" v-show="cell.piece" :class="cell.getPieceColorClass()">
                             <i class="fa-solid" :class="cell.getPieceIcon()"></i>
