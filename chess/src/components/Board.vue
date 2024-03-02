@@ -13,10 +13,12 @@
             <v-col>
                 <!-- placeholder for player 1's captured pieces -->
             </v-col>
-            <v-col class="board" cols="8">
-                <v-row class="board-row" no-gutters v-for="(row, index_x) in board.boardState" :key="index_x">
-                    <v-col class="board-square" v-for="(cell, index_y) in row" :key="index_y"  @click="console.log(index_x, index_y)">
-                        <span class="board-piece" v-show="cell.isPiece()" :class="cell.getPieceColorClass()">
+            <!-- Add logic to control flex-column-reverse depending on player color -->
+            <v-col class="board d-flex flex-column-reverse" cols="8">
+                <v-row class="board-row" no-gutters v-for="(row, index_y) in board.boardState" :key="index_y">
+                    <v-col class="board-square" :class="{ 'selected': cell.selected, 'highlight-move': cell.prospectiveMove }"
+                        v-for="(cell, index_x) in row" :key="index_x" @click="handleClick(index_x, index_y, cell)">
+                        <span class="board-piece" v-show="cell.piece" :class="cell.getPieceColorClass()">
                             <i class="fa-solid" :class="cell.getPieceIcon()"></i>
                         </span>
                         <h3 class="board-notation">{{ cell.id }}</h3>
@@ -36,28 +38,75 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { reactive, ref } from 'vue';
 import { useBoardStore } from '../stores/board.js'
 
 const board = useBoardStore()
+const possibleMoves = reactive([])
+const pieceSelected = ref(false)
 
-function activatePiece(cell='fail', e) {
-    // activate piece, assign property to class
-    // if piece from event is already the active one then unassign
-    //
-    console.log('cell', cell)
-    console.log(cell?.target)
-    console.log(cell?.value)
-    console.log('Event', e)
-    if(!cell.piece) {
-        console.log('hit exit Clause')
+// invokes a function on tile click depending on board state
+function handleClick(row, col, sqRef) {
+    //if no piece is currently selected and the square has a piece
+    if (!pieceSelected.value && sqRef.piece) {
+        // basic activatePiece
+        activatePiece(sqRef)
+
+        // Get list of possible moves
+        possibleMoves.push(...board.pieceMovementSet[sqRef.piece](row, col))
+        // Highlight Possible moves
+        board.stylePossibleMoves(possibleMoves)
+
         return
     }
 
+    
+
+    if(possibleMoves.find((el) => el.id == sqRef.id)){
+        // assign properties to new tile
+        sqRef.piece = pieceSelected.value.piece
+        sqRef.color = pieceSelected.value.color
+
+        // remove piece from previous tile
+        pieceSelected.value.piece = false
+        pieceSelected.value.color = false
+        pieceSelected.value.selected = false
+        pieceSelected.value = false
+        // reset board styles
+        board.stylePossibleMoves(possibleMoves)
+        possibleMoves.length = 0
+        // handover turn
+        return
+    }
+
+    // A piece is selected
+    // if (pieceSelected.value.id == sqRef.id) {
+       if(!possibleMoves.find((el) => el.id == sqRef.id) || pieceSelected.value.id == sqRef.id) {
+        // Create an array of valid move id's, check if array.find(board.boardState[row][col].id)
+        console.log('hit deselect if')
+        pieceSelected.value.selected = false
+        pieceSelected.value = false
+        board.stylePossibleMoves(possibleMoves)
+        possibleMoves.length = 0
+        return
+    }
 }
 
-const highlightedSquares = computed(() => {
+function activatePiece(sqRef) {
+    // activate piece, assign property to class
+    // if piece from event is already the active one then unassign
 
-})
+    if (!pieceSelected.value && !sqRef.piece) {
+        console.log('exit Clause --- No Piece to Select')
+        return
+    }
+    // higher order function to determine checkmate
+    // create working copy of board, use for patch later
+    // reference to selected Cell
+    pieceSelected.value = sqRef
+
+    pieceSelected.value.selected = true
+
+}
 
 </script>

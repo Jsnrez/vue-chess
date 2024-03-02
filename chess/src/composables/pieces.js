@@ -1,7 +1,10 @@
-import {ref} from 'vue'
+// import {ref} from 'vue'
+/**
+ * Returns the starting positions for a board arrangement.
+ * @returns String
+ */
 
 export function usePieces() {
-    const pieces = 'pieces'
 
     function getPieceType(id) {
         var res = "";
@@ -39,6 +42,5 @@ export function usePieces() {
         return res;
     }
 
-
-    return { pieces, getPieceType }
+    return { getPieceType }
 }

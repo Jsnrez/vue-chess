@@ -1,102 +1,136 @@
-import { defineStore } from 'pinia'
-import { reactive, ref } from 'vue'
-import { usePieces } from '../composables/pieces'
+import { defineStore } from 'pinia';
+import { ref, reactive } from 'vue';
+import { usePieces } from '../composables/pieces';
 
 export const useBoardStore = defineStore('board', () => {
+  const boardLoading = ref(false);
+  const boardCols = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
-    const boardLoading=ref(false)
-    const boardCols = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+  const { getPieceType } = usePieces();
 
-    const { getPieceType } = usePieces()
-
-    function _isEven(a){
-        return a % 2 == 0
+  function _isEven(a) {
+    return a % 2 == 0;
+  }
+  // TODO: Rename params to more readable
+  function getColorEvaluation(id, tile) {
+    // if id is even the evaluation needs to be even
+    if (_isEven(id)) {
+      return _isEven(tile);
     }
-    // TODO: Rename params to more readable
-    function getColorEvaluation(id, tile){
-        // if id is even the evaluation needs to be even
-        if(_isEven(id)) {
-            return _isEven(tile)
-        }
-        return !_isEven(tile)
-    }
+    return !_isEven(tile);
+  }
 
-    class boardSquare {
-        constructor(col, id, tile) {
-            // console.log('id for evaluation', id)
-            this.color = getColorEvaluation(id, tile) ? 'black' : 'white';
-            this.classes = null;
-            this.piece = getPieceType(col+id);
-            this.id = col+id;
-        }
-
-        // Temporary functions to test styling until pieces are implemented
-        isPiece() {
-            return this.getPieceType() != "";
-        }
-        getPieceIcon() {
-            return 'fa-chess-' + this.getPieceType();
-        }
-        getPieceType() {
-            var res = "";
-            if (this.id.indexOf("2") > -1 || this.id.indexOf("7") > -1) {
-                res = "pawn";
-            }
-            switch (this.id) {
-                case 'e8':
-                case 'e1':
-                    res = 'king';
-                    break;
-                case 'd8':
-                case 'd1':
-                    res = 'queen';
-                    break;
-                case 'c8':
-                case 'f8':
-                case 'c1':
-                case 'f1':
-                    res = 'bishop';
-                    break;
-                case 'b8':
-                case 'g8':
-                case 'b1':
-                case 'g1':
-                    res = 'knight';
-                    break;
-                case 'a8':
-                case 'h8':
-                case 'a1':
-                case 'h1':
-                    res = 'rook';
-                    break;
-            }
-            return res;
-        }
-        getPieceColorClass() {
-            var res = 'color-dark';
-            if (this.id.indexOf('1') > -1 || this.id.indexOf('2') > -1) {
-                res = 'color-light';
-            }
-            return res;
-        }
+  class boardSquare {
+    constructor(col, id, tile) {
+      // console.log('id for evaluation', id)
+      this.color = getColorEvaluation(id, tile) ? 'black' : 'white';
+      this.classes = null;
+      this.piece = getPieceType(col + id);
+      this.id = col + id;
+      this.selected = false;
+      this.prospectiveMove = false;
     }
 
-    const boardState = reactive(getFreshBoard())
-
-    // [y-axis][x-axis]
-    function getFreshBoard() {
-        // This Returns an Array of Arrays - bottom level has objects
-        return boardCols.map((columnLetter, colIndex) => {
-            // console.log('columnLetter', columnLetter)
-            return boardCols.map((col, tileIndex) => {
-                // colIndex for determining evaluation type, tileIndex for color selection
-                return new boardSquare(col, colIndex + 1, tileIndex + 1)
-            })
-        }).reverse()
+    // Temporary functions to test styling until pieces are implemented
+    getPieceIcon() {
+      return 'fa-chess-' + this.piece;
     }
+    getPieceColorClass() {
+      var res = 'color-dark';
+      if (this.id.indexOf('1') > -1 || this.id.indexOf('2') > -1) {
+        res = 'color-light';
+      }
+      return res;
+    }
+  }
 
+  const boardState = ref(getFreshBoard());
 
+  const pieceMovementSet = reactive({
+    bishop: (x) => {
+      console.log('bishop movement');
+      return []
+    },
+    king: (x) => {
+      console.log('king movement');
+      return []
+    },
+    knight: (x) => {
+      console.log('knight movement');
+      return []
+    },
+    pawn: (x) => {
+      console.log('pawn movement');
+      return []
+    },
+    queen: (x) => {
+      console.log('queen movement');
+      return []
+    },
+    rook: rookMovement,
+  });
 
+  function getFreshBoard() {
+    // This Returns an Array of Arrays - bottom level has objects
+    return boardCols.map((columnLetter, colIndex) => {
+      // console.log('columnLetter', columnLetter)
+      return boardCols.map((col, tileIndex) => {
+        // colIndex for determining evaluation type, tileIndex for color selection
+        return new boardSquare(col, colIndex + 1, tileIndex + 1);
+      });
+    });
+  }
 
-    return { boardLoading, getFreshBoard, boardState }
-})
+  function rookMovement(x, y) {
+    const allPossibleMoves = [];
+    const movementPatterns = {};
+
+    movementPatterns.getXAxisPositiveMovement = boardState.value[y].slice(
+      x + 1
+    );
+    movementPatterns.getXAxisNegativeMovement = x
+      ? boardState.value
+          .map((row) => row.map((sq) => sq).reverse())
+          [y].slice(-x)
+      : [];
+    movementPatterns.getYAxisPositiveMovement = boardState.value
+      .map((row) => row[x])
+      .slice(y + 1);
+    movementPatterns.getYAxisNegativeMovement = y
+      ? boardState.value
+          .map((row) => row[x])
+          .reverse()
+          .slice(-y)
+      : [];
+
+    Object.keys(movementPatterns).forEach((move_dir) => {
+      for (let index = 0; index < movementPatterns[move_dir].length; index++) {
+        const element = movementPatterns[move_dir][index];
+        if (element.piece) {
+          index = movementPatterns[move_dir].length;
+          continue;
+        }
+        allPossibleMoves.push(element)
+      }
+    });
+
+    return allPossibleMoves;
+  }
+
+  //TODO: Break out logic from rookMovement into new function called sequentialMovement. Use for cardinal directions (Up, Down, Left, Right)
+
+  function stylePossibleMoves(movementPatterns) {
+    movementPatterns.forEach((element) => {
+      element.prospectiveMove = !element.prospectiveMove;
+    });
+  }
+
+  return {
+    boardLoading,
+    getFreshBoard,
+    boardState,
+    pieceMovementSet,
+    rookMovement,
+    stylePossibleMoves,
+  };
+});
