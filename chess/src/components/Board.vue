@@ -18,7 +18,7 @@
                 <v-row class="board-row" no-gutters v-for="(row, index_y) in board.boardState" :key="index_y">
                     <v-col class="board-square" :class="{ 'selected': cell.selected, 'highlight-move': cell.prospectiveMove }"
                         v-for="(cell, index_x) in row" :key="index_x" @click="handleClick(index_x, index_y, cell)">
-                        <span class="board-piece" v-show="cell.piece" :class="cell.getPieceColorClass()">
+                        <span class="board-piece" v-show="cell.piece" :class="cell.color">
                             <i class="fa-solid" :class="cell.getPieceIcon()"></i>
                         </span>
                         <h3 class="board-notation">{{ cell.id }}</h3>

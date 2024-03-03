@@ -8,22 +8,21 @@ export const useBoardStore = defineStore('board', () => {
 
   const { getPieceType } = usePieces();
 
-  function _isEven(a) {
-    return a % 2 == 0;
-  }
-  // TODO: Rename params to more readable
-  function getColorEvaluation(id, tile) {
-    // if id is even the evaluation needs to be even
-    if (_isEven(id)) {
-      return _isEven(tile);
+  function getColorForPiece(num){
+    if(num < 3) {
+      return 'color-light'
     }
-    return !_isEven(tile);
+    if(num > 6){
+      return 'color-dark'
+    }
+
+    return null
   }
 
   class boardSquare {
-    constructor(col, id, tile) {
+    constructor(col, id) {
       // console.log('id for evaluation', id)
-      this.color = getColorEvaluation(id, tile) ? 'black' : 'white';
+      this.color = getColorForPiece(id);
       this.classes = null;
       this.piece = getPieceType(col + id);
       this.id = col + id;
@@ -35,13 +34,6 @@ export const useBoardStore = defineStore('board', () => {
     getPieceIcon() {
       return 'fa-chess-' + this.piece;
     }
-    getPieceColorClass() {
-      var res = 'color-dark';
-      if (this.id.indexOf('1') > -1 || this.id.indexOf('2') > -1) {
-        res = 'color-light';
-      }
-      return res;
-    }
   }
 
   const boardState = ref(getFreshBoard());
@@ -49,23 +41,23 @@ export const useBoardStore = defineStore('board', () => {
   const pieceMovementSet = reactive({
     bishop: (x) => {
       console.log('bishop movement');
-      return []
+      return [];
     },
     king: (x) => {
       console.log('king movement');
-      return []
+      return [];
     },
     knight: (x) => {
       console.log('knight movement');
-      return []
+      return [];
     },
     pawn: (x) => {
       console.log('pawn movement');
-      return []
+      return [];
     },
     queen: (x) => {
       console.log('queen movement');
-      return []
+      return [];
     },
     rook: rookMovement,
   });
@@ -74,9 +66,9 @@ export const useBoardStore = defineStore('board', () => {
     // This Returns an Array of Arrays - bottom level has objects
     return boardCols.map((columnLetter, colIndex) => {
       // console.log('columnLetter', columnLetter)
-      return boardCols.map((col, tileIndex) => {
+      return boardCols.map((col) => {
         // colIndex for determining evaluation type, tileIndex for color selection
-        return new boardSquare(col, colIndex + 1, tileIndex + 1);
+        return new boardSquare(col, colIndex + 1);
       });
     });
   }
