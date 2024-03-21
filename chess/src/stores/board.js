@@ -51,10 +51,7 @@ export const useBoardStore = defineStore('board', () => {
       console.log('knight movement');
       return [];
     },
-    pawn: (x) => {
-      console.log('pawn movement');
-      return [];
-    },
+    pawn: pawnMovement,
     queen: (x) => {
       console.log('queen movement');
       return [];
@@ -71,6 +68,23 @@ export const useBoardStore = defineStore('board', () => {
         return new boardSquare(col, colIndex + 1);
       });
     });
+  }
+
+  function pawnMovement(x, y) {
+    const allPossibleMoves = []
+    const direction = boardState.value[y][x].color == 'color-dark' ? -1 : 1
+    // exit clause - if Y axis movement is a valid place on the board
+    if(!boardState.value[y+direction]){
+      return allPossibleMoves
+    }
+
+    [-1, 0, 1].forEach(element => {
+      if(boardState.value[x+element] ){
+        allPossibleMoves.push(boardState.value[y+direction][x + element])
+      }
+    });
+
+    return allPossibleMoves
   }
 
   function rookMovement(x, y) {
