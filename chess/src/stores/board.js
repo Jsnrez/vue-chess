@@ -39,10 +39,7 @@ export const useBoardStore = defineStore('board', () => {
   const boardState = ref(getFreshBoard());
 
   const pieceMovementSet = reactive({
-    bishop: (x) => {
-      console.log('bishop movement');
-      return [];
-    },
+    bishop: bishopMovement,
     king: (x) => {
       console.log('king movement');
       return [];
@@ -70,11 +67,52 @@ export const useBoardStore = defineStore('board', () => {
     });
   }
 
+
+  function bishopMovement(x, y) {
+    const allPossibleMoves = []
+    const directions = [[1, 1], [1, -1], [-1, 1], [-1, -1]]
+
+    directions.forEach(direction => {
+      allPossibleMoves.push(...diagonalMovement(x, y, direction))
+    })
+    
+    return allPossibleMoves
+  }
+
+  function diagonalMovement(xStart, yStart, [yIncrement, xIncrement]) {
+    //Moves diagonally through a 2D array until it hits length.
+    let returnVal = []
+    let x = xStart + xIncrement
+    let y = yStart + yIncrement
+    //TODO: Replace 8 with .lengths after initial test
+    while(x >= 0 && x < 8 && y >= 0 && y < 8) {
+      // exit clause for friendly piece in square
+      if(boardState.value[y][x].piece && boardState.value[y][x].color == boardState.value[yStart][xStart].color) {
+        console.log('hit diagonalBreak')
+        break
+      }
+      
+      returnVal.push(boardState.value[y][x])
+      // exit clause for opposing piece in square
+      if(boardState.value[y][x].piece && boardState.value[y][x].color != boardState.value[yStart][xStart].color) {
+        console.log('hit custom exit')
+        x = -7
+      }
+
+      x += xIncrement;
+      y += yIncrement;
+      
+    }
+
+    return returnVal
+  }
+
   function pawnMovement(x, y) {
     const allPossibleMoves = []
     const direction = boardState.value[y][x].color == 'color-dark' ? -1 : 1
     // exit clause - if Y axis movement is a valid place on the board
     if(!boardState.value[y+direction]){
+      // Add func to replace pawn with a claimed piece
       return allPossibleMoves
     }
 
