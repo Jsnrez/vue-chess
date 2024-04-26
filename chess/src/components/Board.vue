@@ -68,8 +68,8 @@ function handleClick(row, col, sqRef) {
         sqRef.color = pieceSelected.value.color
 
         // remove piece from previous tile
-        pieceSelected.value.piece = false
-        pieceSelected.value.color = false
+        pieceSelected.value.piece = ""
+        pieceSelected.value.color = null
         pieceSelected.value.selected = false
         pieceSelected.value = false
         // reset board styles
