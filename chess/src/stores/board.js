@@ -5,8 +5,16 @@ import { usePieces } from '../composables/pieces';
 export const useBoardStore = defineStore('board', () => {
   const boardLoading = ref(false);
   const boardCols = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-
   const { getPieceType } = usePieces();
+  const isFriendlyPiece = (x, y, color) =>
+      boardState.value[y][x].piece &&
+      boardState.value[y][x].color === color;
+
+  const isOpposingPiece = (x, y, color) =>
+    boardState.value[y][x].piece &&
+    boardState.value[y][x].color !== color;
+
+  const isValidPosition = (x, y) => x >= 0 && x < 8 && y >= 0 && y < 8;
 
   function getColorForPiece(num){
     if(num < 3) {
@@ -41,10 +49,7 @@ export const useBoardStore = defineStore('board', () => {
   const pieceMovementSet = reactive({
     bishop: bishopMovement,
     king: kingMovement,
-    knight: (x) => {
-      console.log('knight movement');
-      return [];
-    },
+    knight: knightMovement,
     pawn: pawnMovement,
     queen: (x) => {
       console.log('queen movement');
@@ -134,6 +139,25 @@ export const useBoardStore = defineStore('board', () => {
         possibleMoves.push(boardState.value[y][x])
       })
     })
+
+    return possibleMoves
+  }
+
+  function knightMovement(xStart, yStart){
+    const possibleMoves = []
+    // flanking rules
+    const directions = [[2, -1], [2, 1], [-2, -1], [-2, 1], [1, -2], [1, 2], [-1, -2], [-1, 2]]
+
+    directions.forEach(([yDir, xDir]) => {
+      let y = yStart + yDir;
+      let x = xStart + xDir;
+      // exit clauses
+      if(!isValidPosition(x, y)) return;
+      if(isFriendlyPiece(x, y, boardState.value[yStart][xStart].color)) return;
+
+      possibleMoves.push(boardState.value[y][x])
+
+    });
 
     return possibleMoves
   }
