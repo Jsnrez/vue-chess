@@ -114,29 +114,26 @@ export const useBoardStore = defineStore('board', () => {
 
   function kingMovement(xStart, yStart) {
     let possibleMoves = []
-    //x coordinates
+    const directions = [-1, 0, 1]
+    // evaluations
 
-    const tempo = [-1, 0, 1]
-
-    tempo.forEach(el => {
+    directions.forEach(el => {
       let y = yStart + el
       // outer loop = yAxis
       // exit clause - if yAxis is out of bounds
-      
       if(y < 0 || y > 7 ) {
-        console.log('hit y exit clause', {'y': y})
         return
       }
-      tempo.forEach(innerEl => {
+
+      directions.forEach(innerEl => {
         let x = xStart + innerEl
-        if(x < 0 || x > 7){
+        if(x < 0 || x > 7 || (el == 0 && innerEl == 0)){
           return
         }
-        console.log({'x': x, 'y': y})
+
         possibleMoves.push(boardState.value[y][x])
       })
     })
-
 
     return possibleMoves
   }
