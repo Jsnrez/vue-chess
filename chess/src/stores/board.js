@@ -40,10 +40,7 @@ export const useBoardStore = defineStore('board', () => {
 
   const pieceMovementSet = reactive({
     bishop: bishopMovement,
-    king: (x) => {
-      console.log('king movement');
-      return [];
-    },
+    king: kingMovement,
     knight: (x) => {
       console.log('knight movement');
       return [];
@@ -79,9 +76,10 @@ export const useBoardStore = defineStore('board', () => {
     return allPossibleMoves
   }
 
-  function diagonalMovement(xStart, yStart, [yIncrement, xIncrement]) {
+  function diagonalMovement(xStart, yStart, [yIncrement, xIncrement], limit=0) {
     //Moves diagonally through a 2D array until it hits length.
     let returnVal = []
+    let counter = 0
     let x = xStart + xIncrement
     let y = yStart + yIncrement
     //TODO: Replace 8 with .lengths after initial test
@@ -99,12 +97,45 @@ export const useBoardStore = defineStore('board', () => {
         x = -7
       }
 
+      if(limit > 0){
+        counter++
+        if(limit >=counter){
+          return returnVal
+        }
+      }
+
       x += xIncrement;
       y += yIncrement;
       
     }
 
     return returnVal
+  }
+
+  function kingMovement(xStart, yStart) {
+    let possibleMoves = []
+    const directions = [-1, 0, 1]
+    // evaluations
+
+    directions.forEach(el => {
+      let y = yStart + el
+      // outer loop = yAxis
+      // exit clause - if yAxis is out of bounds
+      if(y < 0 || y > 7 ) {
+        return
+      }
+
+      directions.forEach(innerEl => {
+        let x = xStart + innerEl
+        if(x < 0 || x > 7 || (el == 0 && innerEl == 0)){
+          return
+        }
+
+        possibleMoves.push(boardState.value[y][x])
+      })
+    })
+
+    return possibleMoves
   }
 
   function pawnMovement(x, y) {
