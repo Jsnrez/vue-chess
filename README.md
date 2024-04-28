@@ -28,12 +28,27 @@ TBD
 
 ## Current Checklist
 - Board
-   - Write method for Generating Board
-      + Writing Method for empty board is useful for Puzzles (NEW Stretch Goal)
-   - Link Board Object to Board.vue (v-for)
-   - Design Tile Object
-   - Work out how to assign pieces to starting positions
-
+   - ~~Write method for Generating Board~~
+      + Write a method for json file import
+   - ~~Link Board Object to Board.vue (v-for)~~
+   - ~~Design Tile Object~~
+   - ~~Work out how to assign pieces to starting positions~~
+   - Graveyard: Show list of taken pieces
+- Pieces
+   - ~~Add Art Pieces~~
+   - ~~Write rules for basic movement~~
+      - Advanced moves (castling, etc.) will come later
+- Rules
+   - Check
+   - Checkmate
+   - Pawn Promotion
+- Client
+   - PreGame Lobby
+   - Chat Functions
+   - Websocket connection
+- Game
+   - Player Turns
+   - Move Confirmation(?)
 ### Goals
 - Setup on AWS
 - Create Websocket based Rooms
