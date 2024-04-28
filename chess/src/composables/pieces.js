@@ -42,5 +42,35 @@ export function usePieces() {
         return res;
     }
 
-    return { getPieceType }
+    function horizontalMovement(x, y, boardState) {
+
+        const moveAlongAxis = (start, end, increment, xAxis) => {
+            const moves = [];
+            for (let i = start + increment; i !== end; i += increment) {
+                const square = xAxis ? boardState[y][i] : boardState[i][x];
+                if (square.piece) {
+                    if (square.color !== boardState[y][x].color) moves.push(square);
+                    break;
+                }
+                moves.push(square);
+            }
+            return moves;
+        }; 
+
+        const xAxisPositiveMovement = moveAlongAxis(x, 8, 1, true);
+        const xAxisNegativeMovement = moveAlongAxis(x, -1, -1, true);
+        const yAxisPositiveMovement = moveAlongAxis(y, 8, 1, false);
+        const yAxisNegativeMovement = moveAlongAxis(y, -1, -1, false);
+    
+        return [
+            ...xAxisPositiveMovement,
+            ...xAxisNegativeMovement,
+            ...yAxisPositiveMovement,
+            ...yAxisNegativeMovement
+        ];
+    }
+
+    
+
+    return { getPieceType, horizontalMovement}
 }

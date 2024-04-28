@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia';
-import { ref, reactive } from 'vue';
+import { ref } from 'vue';
 import { usePieces } from '../composables/pieces';
 
 export const useBoardStore = defineStore('board', () => {
   const boardLoading = ref(false);
   const boardCols = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-  const { getPieceType } = usePieces();
+  const { getPieceType, horizontalMovement } = usePieces();
   const isFriendlyPiece = (x, y, color) =>
       boardState.value[y][x].piece &&
       boardState.value[y][x].color === color;
@@ -46,17 +46,14 @@ export const useBoardStore = defineStore('board', () => {
 
   const boardState = ref(getFreshBoard());
 
-  const pieceMovementSet = reactive({
+  const pieceMovementSet = {
     bishop: bishopMovement,
     king: kingMovement,
     knight: knightMovement,
     pawn: pawnMovement,
-    queen: (x) => {
-      console.log('queen movement');
-      return [];
-    },
+    queen: queenMovement,
     rook: rookMovement,
-  });
+  };
 
   function getFreshBoard() {
     // This Returns an Array of Arrays - bottom level has objects
@@ -178,6 +175,15 @@ export const useBoardStore = defineStore('board', () => {
     });
 
     return allPossibleMoves
+  }
+
+  function queenMovement(x, y) {
+    const hoizontalMoves = horizontalMovement(x, y, boardState.value)
+    const diagonalMoves = bishopMovement(x, y)
+    return [
+      ...hoizontalMoves,
+      ...diagonalMoves
+    ]
   }
 
   function rookMovement(x, y) {
